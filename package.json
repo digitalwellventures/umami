@@ -10,6 +10,10 @@
     "url": "https://github.com/umami-software/umami.git"
   },
   "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=18.18.0"
+  },
   "scripts": {
     "dev": "next dev -p 3001 --turbo",
     "build": "npm-run-all check-env build-db check-db build-tracker build-geo build-app",
