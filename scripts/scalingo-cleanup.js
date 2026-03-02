@@ -61,7 +61,7 @@ for (const dir of removeDirs) {
 console.log('\nInstalling minimal runtime dependencies...');
 try {
   execSync(
-    'npm install --no-package-lock --no-save npm-run-all dotenv chalk semver prisma@6.19.0 @prisma/adapter-pg@6.19.0 pg',
+    'npm install --no-package-lock --no-save --legacy-peer-deps npm-run-all dotenv chalk semver prisma@6.19.0 @prisma/adapter-pg@6.19.0 pg',
     { stdio: 'inherit' },
   );
   console.log('  Minimal deps installed.');
@@ -69,7 +69,7 @@ try {
   console.error('  Warning: failed to install minimal deps:', e.message);
   // Fallback: try with npx
   try {
-    execSync('npx --yes npm install --no-package-lock --no-save npm-run-all dotenv chalk semver prisma@6.19.0 @prisma/adapter-pg@6.19.0 pg', { stdio: 'inherit' });
+    execSync('npx --yes npm install --no-package-lock --no-save --legacy-peer-deps npm-run-all dotenv chalk semver prisma@6.19.0 @prisma/adapter-pg@6.19.0 pg', { stdio: 'inherit' });
   } catch (e2) {
     console.error('  Fallback also failed:', e2.message);
   }
