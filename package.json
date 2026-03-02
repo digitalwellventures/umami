@@ -46,6 +46,7 @@
     "download-country-names": "node scripts/download-country-names.js",
     "download-language-names": "node scripts/download-language-names.js",
     "change-password": "node scripts/change-password.js",
+    "prepare": "echo ok",
     "scalingo-postbuild": "node scripts/scalingo-cleanup.js",
     "postbuild": "node scripts/postbuild.js",
     "test": "jest",
