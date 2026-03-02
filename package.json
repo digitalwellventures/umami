@@ -47,7 +47,7 @@
     "download-language-names": "node scripts/download-language-names.js",
     "change-password": "node scripts/change-password.js",
     "prepare": "echo ok",
-    "scalingo-postbuild": "node scripts/scalingo-cleanup.js",
+    "scalingo-postbuild": "npm-run-all check-env build-db check-db build-tracker build-geo build-app && node scripts/scalingo-cleanup.js",
     "postbuild": "node scripts/postbuild.js",
     "test": "jest",
     "cypress-open": "cypress open cypress run",
