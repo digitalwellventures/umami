@@ -39,7 +39,10 @@ const removeDirs = [
   'src',           // source code — already compiled into .next
   'docker',        // Docker-specific files
   'podman',        // Podman-specific files
+  'build',         // build artifacts (messages, etc.)
+  'db',            // database files (ClickHouse views etc.)
   'node_modules/.cache',
+  '.next/cache',   // Next.js build cache (not needed at runtime)
 ];
 
 for (const dir of removeDirs) {
@@ -109,6 +112,27 @@ console.log('\nRemoving .d.ts files...');
 try {
   execSync('find node_modules -name "*.d.ts" -type f -delete 2>/dev/null', { stdio: 'pipe' });
   console.log('  Removed *.d.ts files from node_modules');
+} catch {
+  // ignore errors
+}
+
+// 5. Remove README, LICENSE, CHANGELOG etc. from node_modules
+console.log('\nRemoving docs from node_modules...');
+try {
+  execSync('find node_modules -maxdepth 3 \\( -name "README*" -o -name "CHANGELOG*" -o -name "HISTORY*" -o -name "LICENSE*" -o -name "LICENCE*" -o -name "*.md" \\) -type f -delete 2>/dev/null', { stdio: 'pipe' });
+  console.log('  Removed documentation files');
+} catch {
+  // ignore errors
+}
+
+// 6. Remove .pnpm store metadata and unused hoisted packages
+console.log('\nCleaning pnpm store...');
+try {
+  // Remove pnpm patch commit hashes and lock metadata
+  execSync('find node_modules/.pnpm -name "*.tgz" -type f -delete 2>/dev/null', { stdio: 'pipe' });
+  // Remove test directories inside node_modules
+  execSync('find node_modules -type d \\( -name "test" -o -name "tests" -o -name "__tests__" -o -name "example" -o -name "examples" -o -name "docs" -o -name "doc" \\) -exec rm -rf {} + 2>/dev/null', { stdio: 'pipe' });
+  console.log('  Cleaned pnpm store and test directories');
 } catch {
   // ignore errors
 }
