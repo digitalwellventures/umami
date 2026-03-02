@@ -44,7 +44,6 @@ rm('node_modules');
 const removeDirs = [
   'cypress',
   '.husky',
-  'src',
   'docker',
   'podman',
   'build',
@@ -55,24 +54,31 @@ for (const dir of removeDirs) {
   rm(dir);
 }
 
-// 3. Install ONLY the minimal packages needed for startup scripts.
-// check-db.js needs: dotenv, chalk, semver, prisma, @prisma/adapter-pg, pg
-// The generated Prisma client is in ./generated/ (already present from build)
+// Remove src/ subdirs but keep src/generated/ (needed by Prisma at runtime)
+console.log('Cleaning src/ (keeping generated/)...');
+try {
+  const srcEntries = fs.readdirSync('src');
+  for (const entry of srcEntries) {
+    if (entry !== 'generated') {
+      rm(`src/${entry}`);
+    }
+  }
+} catch {
+  // src might not exist
+}
+
+// 3. Install ONLY the minimal packages needed for startup.
+// Procfile runs: prisma migrate deploy && node .next/standalone/server.js
+// prisma needs: prisma CLI + @prisma/client + @prisma/engines
 console.log('\nInstalling minimal runtime dependencies...');
 try {
   execSync(
-    'npm install --no-package-lock --no-save --legacy-peer-deps npm-run-all dotenv chalk semver prisma@6.19.0 @prisma/adapter-pg@6.19.0 pg',
+    'npm install --no-package-lock --no-save --legacy-peer-deps prisma@6.19.0',
     { stdio: 'inherit' },
   );
   console.log('  Minimal deps installed.');
 } catch (e) {
   console.error('  Warning: failed to install minimal deps:', e.message);
-  // Fallback: try with npx
-  try {
-    execSync('npx --yes npm install --no-package-lock --no-save --legacy-peer-deps npm-run-all dotenv chalk semver prisma@6.19.0 @prisma/adapter-pg@6.19.0 pg', { stdio: 'inherit' });
-  } catch (e2) {
-    console.error('  Fallback also failed:', e2.message);
-  }
 }
 
 // 4. Clean up the fresh node_modules
