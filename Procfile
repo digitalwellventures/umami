@@ -1,1 +1,1 @@
-web: pnpm start
+web: node scripts/check-db.js && node .next/standalone/server.js
