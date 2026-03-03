@@ -35,7 +35,23 @@ console.log('\n--- Scalingo post-build cleanup ---\n');
 const before = dirSize('.');
 console.log(`Size before cleanup: ~${before} MB\n`);
 
-// 1. Remove the entire top-level node_modules.
+// 1. Copy static assets into standalone directory (required by Next.js standalone)
+// See: https://nextjs.org/docs/advanced-features/output-file-tracing
+console.log('Copying static assets into standalone...');
+try {
+  execSync('cp -r public .next/standalone/public', { stdio: 'pipe' });
+  console.log('  Copied public/ → .next/standalone/public/');
+} catch (e) {
+  console.error('  Failed to copy public:', e.message);
+}
+try {
+  execSync('cp -r .next/static .next/standalone/.next/static', { stdio: 'pipe' });
+  console.log('  Copied .next/static/ → .next/standalone/.next/static/');
+} catch (e) {
+  console.error('  Failed to copy static:', e.message);
+}
+
+// 2. Remove the entire top-level node_modules.
 // The standalone build in .next/standalone/ has its own bundled node_modules.
 console.log('Removing top-level node_modules (standalone has its own)...');
 rm('node_modules');
